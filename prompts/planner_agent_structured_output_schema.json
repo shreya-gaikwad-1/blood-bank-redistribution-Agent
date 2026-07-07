@@ -1,0 +1,46 @@
+{
+  "status": "PARTIAL",
+  "request": {
+    "request_id": "REQ-20260707-001",
+    "requesting_hospital": {
+      "hospital_id": "H002",
+      "hospital_name": "Sassoon General Hospital"
+    },
+    "blood_type": "O+",
+    "units_required": 18
+  },
+  "execution_plan": {
+    "strategy": "MULTI_HOSPITAL",
+    "total_allocated": 3,
+    "remaining_shortage": 15,
+    "priority_order": [
+      {
+        "priority": 1,
+        "hospital_id": "H001",
+        "hospital_name": "Ruby Hall Clinic",
+        "units_to_request": 2,
+        "available_bags": 2,
+        "distance_km": 4.2,
+        "contact": {
+          "phone": "9876499910",
+          "email": "bloodbank.h001@hemosync.demo"
+        },
+        "reason": "Highest available inventory."
+      },
+      {
+        "priority": 2,
+        "hospital_id": "H003",
+        "hospital_name": "Jehangir Hospital",
+        "units_to_request": 1,
+        "available_bags": 1,
+        "distance_km": 6.8,
+        "contact": {
+          "phone": "9876499912",
+          "email": "bloodbank.h003@hemosync.demo"
+        },
+        "reason": "Next best available hospital."
+      }
+    ]
+  },
+  "next_action": "START_CALLING"
+}
