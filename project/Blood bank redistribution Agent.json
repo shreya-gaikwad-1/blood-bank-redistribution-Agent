@@ -1,0 +1,511 @@
+{
+  "name": "Blood bank redistribution Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1Iwu0dL5vtF1hmx1T--nCLlut6DBmtNfz_Houfb1swKY",
+          "mode": "list",
+          "cachedResultName": "blood bank redistribution agent dataset",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Iwu0dL5vtF1hmx1T--nCLlut6DBmtNfz_Houfb1swKY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 797013527,
+          "mode": "list",
+          "cachedResultName": "Emergency requests",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Iwu0dL5vtF1hmx1T--nCLlut6DBmtNfz_Houfb1swKY/edit#gid=797013527"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        144,
+        0
+      ],
+      "id": "9cdc4234-98fb-4e03-89a7-4f623763576e",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "85TCbDCUWOnM3ew4",
+          "name": "Google Sheets Trigger OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        -160
+      ],
+      "id": "4d70c086-16ff-4fb8-a2a7-140d5d1a66c0",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Iwu0dL5vtF1hmx1T--nCLlut6DBmtNfz_Houfb1swKY",
+          "mode": "list",
+          "cachedResultName": "blood bank redistribution agent dataset",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Iwu0dL5vtF1hmx1T--nCLlut6DBmtNfz_Houfb1swKY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 991561061,
+          "mode": "list",
+          "cachedResultName": "blood inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Iwu0dL5vtF1hmx1T--nCLlut6DBmtNfz_Houfb1swKY/edit#gid=991561061"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Blood_Type",
+              "lookupValue": "={{ $json.Blood_Type }}"
+            },
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Available"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        0
+      ],
+      "id": "a069a626-d712-4827-a8de-241e0d63769b",
+      "name": "Blood inventory",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ykS2wDqiJ6s3qqk3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Iwu0dL5vtF1hmx1T--nCLlut6DBmtNfz_Houfb1swKY",
+          "mode": "list",
+          "cachedResultName": "blood bank redistribution agent dataset",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Iwu0dL5vtF1hmx1T--nCLlut6DBmtNfz_Houfb1swKY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hospitals",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Iwu0dL5vtF1hmx1T--nCLlut6DBmtNfz_Houfb1swKY/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Hospital_ID",
+              "lookupValue": "={{ $json.Hospital_ID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        832,
+        -160
+      ],
+      "id": "ea7c62b9-8eca-4446-a28a-3af35e46f7b6",
+      "name": "Hospitals",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ykS2wDqiJ6s3qqk3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Count Blood Bags\nconst inventory = $input.all();\n\nconst counts = {};\n\nfor (const item of inventory) {\n\n    const hospital = item.json.Hospital_ID;\n\n    if (!counts[hospital]) {\n        counts[hospital] = 0;\n    }\n\n    counts[hospital]++;\n}\n\nreturn Object.entries(counts).map(([hospital, total]) => ({\n    json: {\n        Hospital_ID: hospital,\n        Available_Bags: total\n    }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "c82f0493-0566-404d-ad60-a95daf7c5d9b",
+      "name": "Count Blood Bags"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "Hospital_ID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1200,
+        -16
+      ],
+      "id": "09d01c91-6ea9-4c8d-b34e-e37d466a8997",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1872,
+        320
+      ],
+      "id": "a91f160a-86fd-40d5-8c9e-74469589a21f",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "KkU2S1p5OZGWuvSc",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Iwu0dL5vtF1hmx1T--nCLlut6DBmtNfz_Houfb1swKY",
+          "mode": "list",
+          "cachedResultName": "blood bank redistribution agent dataset",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Iwu0dL5vtF1hmx1T--nCLlut6DBmtNfz_Houfb1swKY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hospitals",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Iwu0dL5vtF1hmx1T--nCLlut6DBmtNfz_Houfb1swKY/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Hospital_ID",
+              "lookupValue": "={{ $json.Hospital_ID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        224
+      ],
+      "id": "eb61fb61-74f0-4176-9baa-547df85aa7df",
+      "name": "Hospital: requested ",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ykS2wDqiJ6s3qqk3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"status\": \"PARTIAL\",\n  \"request\": {\n    \"request_id\": \"REQ-20260707-001\",\n    \"requesting_hospital\": {\n      \"hospital_id\": \"H002\",\n      \"hospital_name\": \"Sassoon General Hospital\"\n    },\n    \"blood_type\": \"O+\",\n    \"units_required\": 18\n  },\n  \"execution_plan\": {\n    \"strategy\": \"MULTI_HOSPITAL\",\n    \"total_allocated\": 3,\n    \"remaining_shortage\": 15,\n    \"priority_order\": [\n      {\n        \"priority\": 1,\n        \"hospital_id\": \"H001\",\n        \"hospital_name\": \"Ruby Hall Clinic\",\n        \"units_to_request\": 2,\n        \"available_bags\": 2,\n        \"distance_km\": 4.2,\n        \"contact\": {\n          \"phone\": \"9876499910\",\n          \"email\": \"bloodbank.h001@hemosync.demo\"\n        },\n        \"reason\": \"Highest available inventory.\"\n      },\n      {\n        \"priority\": 2,\n        \"hospital_id\": \"H003\",\n        \"hospital_name\": \"Jehangir Hospital\",\n        \"units_to_request\": 1,\n        \"available_bags\": 1,\n        \"distance_km\": 6.8,\n        \"contact\": {\n          \"phone\": \"9876499912\",\n          \"email\": \"bloodbank.h003@hemosync.demo\"\n        },\n        \"reason\": \"Next best available hospital.\"\n      }\n    ]\n  },\n  \"next_action\": \"START_CALLING\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2080,
+        272
+      ],
+      "id": "530ef922-3437-465b-8dbd-a93c11a5154b",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the Planning Agent of HemoSync AI, an autonomous blood redistribution system.\n\nYour objective is to generate the optimal blood redistribution plan for an emergency request.\n\nYou are given two inputs:\n\n------------------------------------------------------------\nINPUT 1 : EMERGENCY REQUEST\n------------------------------------------------------------\n\nRequesting Hospital ID:\n{{ $('Google Sheets Trigger').first().json.Hospital_ID }}\n\nBlood Type Requested:\n{{ $('Google Sheets Trigger').first().json.Blood_Type }}\n\nUnits Required:\n{{ $('Google Sheets Trigger').first().json.Units_Required }}\n\n------------------------------------------------------------\nINPUT 2 : CANDIDATE DONOR HOSPITALS\n------------------------------------------------------------\n\n{{ JSON.stringify($json, null, 2) }}\n\nEach hospital contains the following information:\n\n- Hospital_ID\n- Hospital_Name\n- Available_Bags\n- Distance_km\n- Phone\n- Email\n- Latitude\n- Longitude\n\n------------------------------------------------------------\nYOUR TASK\n------------------------------------------------------------\n\n1. Determine whether a single hospital can satisfy the entire request.\n\n2. If one hospital has enough available blood bags, allocate the entire request to that hospital.\n\n3. If no single hospital has sufficient blood bags, distribute the request across multiple hospitals.\n\n4. Prioritize hospitals using the following criteria (highest priority first):\n\n   • Highest number of Available_Bags\n   • Shortest Distance_km\n   • Minimum number of hospitals involved\n\n5. Never allocate more blood bags than a hospital currently has available.\n\n6. The total allocated units must equal the Units Required whenever possible.\n\n7. If there is insufficient inventory across all hospitals, allocate all available units and report the remaining shortage.\n\n8. Briefly explain why the selected hospital(s) were chosen.\n\n------------------------------------------------------------\nOUTPUT FORMAT\n------------------------------------------------------------\n\nReturn ONLY valid JSON.\n\n{\n  \"status\": \"SUCCESS | PARTIAL | FAILED\",\n\n  \"request\": {\n    \"hospital_id\": \"\",\n    \"blood_type\": \"\",\n    \"units_required\": 0\n  },\n\n  \"allocation\": [\n    {\n      \"rank\": 1,\n      \"hospital_id\": \"\",\n      \"hospital_name\": \"\",\n      \"units_to_transfer\": 0,\n      \"available_bags\": 0,\n      \"distance_km\": 0,\n      \"phone\": \"\",\n      \"email\": \"\",\n      \"reason\": \"\"\n    }\n  ],\n\n  \"summary\": {\n    \"total_allocated\": 0,\n    \"remaining_shortage\": 0,\n    \"number_of_hospitals_used\": 0\n  }\n}\n\nRules:\n- Return ONLY valid JSON.\n- Do not include markdown.\n- Do not include code blocks.\n- Do not include any explanation outside the JSON.\n- All numeric values must be numbers, not strings.\n- If no hospital can provide blood, return an empty allocation array and set status to \"FAILED\".",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1936,
+        80
+      ],
+      "id": "79d594a0-0265-4336-a944-271be2cdb6d5",
+      "name": "Planner Agent"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1488,
+        80
+      ],
+      "id": "d14610c1-024e-40cc-9762-ea1fb3d1a936",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all incoming items\nconst items = $input.all();\n\n// The last item is the requesting hospital\nconst requestedHospital = items[items.length - 1].json;\n\n// All previous items are candidate hospitals\nconst candidateHospitals = items\n  .slice(0, items.length - 1)\n  .map(item => item.json);\n\nreturn [\n  {\n    json: {\n      requested_hospital: requestedHospital,\n      candidate_hospitals: candidateHospitals\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1696,
+        80
+      ],
+      "id": "83a356f7-e90b-42b0-bd23-2b5553672915",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "={{ $json.output.allocation[0].email }}",
+        "subject": "=Request  {{ $json.output.allocation[0].available_bags }} blood bags to {{ $json.output.request.hospital_id }}",
+        "message": "=Dear Blood Bank Officer,\n\nSassoon General Hospital urgently requires 2 units of O+ blood.\n\nPlease reply with:\n\nYES\nor\n\nNO\n\nwithin 15 minutes.\n\nRegards,\n{{ $json.output.request.hospital_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2288,
+        80
+      ],
+      "id": "73617da1-5c13-4f02-bc1d-663d4d884af7",
+      "name": "Send message and wait for response",
+      "webhookId": "04aa426b-ab32-4182-93a2-d887759afb21",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "FgX4QIq3Kw7qriox",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Planner Agent').item.json.output.allocation[0].email }}",
+        "subject": "Donation confirmed",
+        "emailType": "text",
+        "message": "=Thank you for donating  {{ $('Planner Agent').item.json.output.allocation[0].available_bags }} blood bags.\n\nregards,\n{{ $('Planner Agent').item.json.output.request.hospital_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2496,
+        80
+      ],
+      "id": "0221314d-f1f8-4375-b5f5-e9c3572ed3e8",
+      "name": "Send a message",
+      "webhookId": "a4b1e6da-ff5e-4b59-bab3-c7caa42257bf",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "FgX4QIq3Kw7qriox",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Blood inventory",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Hospital: requested ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Blood inventory": {
+      "main": [
+        [
+          {
+            "node": "Count Blood Bags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hospitals": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Count Blood Bags": {
+      "main": [
+        [
+          {
+            "node": "Hospitals",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Planner Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hospital: requested ": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Planner Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Planner Agent": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Planner Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "260a3f5b-041c-41ad-8ea9-79321502fcd6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8a041a73ab2058569e4d604b922167dac2897c168c6c7e473e6d2c6783a5ca1f"
+  },
+  "nodeGroups": [],
+  "id": "9RhrGCNM3mGq7zdF",
+  "tags": []
+}
